@@ -1,14 +1,17 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -22,9 +25,9 @@ import org.springframework.lang.NonNull;
 @Table(
     name = "user_profile",
     indexes = {
-    @Index(columnList = "created"),
-    @Index(columnList = "updated")
-})
+        @Index(columnList = "created"),
+        @Index(columnList = "updated")
+    })
 public class User {
 
   @NonNull
@@ -47,12 +50,72 @@ public class User {
   private Date updated;
 
   @NonNull
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(nullable = false)
+  private Date connected;
+
+  @NonNull
   @Column(nullable = false, updatable = false, unique = true)
-  @JsonIgnore
   private String oauthKey;
 
   @NonNull
   @Column(nullable = false, unique = true)
   @JsonProperty("name")
   private String displayName;
+
+  @NonNull
+  public UUID getId() {
+    return id;
+  }
+
+  @NonNull
+  public Date getCreated() {
+    return created;
+  }
+
+  @NonNull
+  public Date getUpdated() {
+    return updated;
+  }
+
+  @NonNull
+  public Date getConnected() {
+    return connected;
+  }
+
+  public void setConnected(@NonNull Date connected) {
+    this.connected = connected;
+  }
+
+  @NonNull
+  public String getOauthKey() {
+    return oauthKey;
+  }
+
+  public void setOauthKey(@NonNull String oauthKey) {
+    this.oauthKey = oauthKey;
+  }
+
+  @NonNull
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  @NonNull
+  @OneToMany(mappedBy = "contributor")
+  @OrderBy("created DESC")
+  private final List<Image> images = new LinkedList<>();
+
+  public void setDisplayName(@NonNull String displayName) {
+    this.displayName = displayName;
+  }
+
+  @NonNull
+  public List<Image> getImages() {
+    return images;
+  }
+
+
 }
+
+

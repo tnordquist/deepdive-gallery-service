@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+derby.log
+/gallery_db/
+ddl.sql
