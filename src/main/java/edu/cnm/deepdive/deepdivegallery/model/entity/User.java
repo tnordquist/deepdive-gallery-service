@@ -1,12 +1,15 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
@@ -55,6 +58,7 @@ public class User {
   private Date connected;
 
   @NonNull
+  @JsonIgnore
   @Column(nullable = false, updatable = false, unique = true)
   private String oauthKey;
 
@@ -62,6 +66,18 @@ public class User {
   @Column(nullable = false, unique = true)
   @JsonProperty("name")
   private String displayName;
+
+  @NonNull
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "contributor")
+  @OrderBy("created DESC")
+  private final List<Image> images = new LinkedList<>();
+
+  @NonNull
+  @JsonIgnore
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator", cascade = CascadeType.ALL)
+  @OrderBy("created DESC")
+  private final List<Gallery> galleries = new LinkedList<>();
 
   @NonNull
   public UUID getId() {
@@ -101,11 +117,6 @@ public class User {
     return displayName;
   }
 
-  @NonNull
-  @OneToMany(mappedBy = "contributor")
-  @OrderBy("created DESC")
-  private final List<Image> images = new LinkedList<>();
-
   public void setDisplayName(@NonNull String displayName) {
     this.displayName = displayName;
   }
@@ -115,7 +126,10 @@ public class User {
     return images;
   }
 
-
+  @NonNull
+  public List<Gallery> getGalleries() {
+    return galleries;
+  }
 }
 
 

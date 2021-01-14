@@ -1,12 +1,11 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.net.URI;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OrderBy;
@@ -23,10 +23,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
 @Entity
@@ -36,16 +33,13 @@ import org.springframework.stereotype.Component;
         @Index(columnList = "title")
     }
 )
-@Component
-public class Image {
-
-  private static EntityLinks entityLinks;
+public class Gallery {
 
   @NonNull
   @Id
   @GeneratedValue(generator = "uuid2")
   @GenericGenerator(name = "uuid2", strategy = "uuid2")
-  @Column(name = "image_id", nullable = false, updatable = false, columnDefinition = "CHAR(16) FOR BIT DATA")
+  @Column(name = "gallery_id", nullable = false, updatable = false, columnDefinition = "CHAR(16) FOR BIT DATA")
   private UUID id;
 
   @NonNull
@@ -63,31 +57,26 @@ public class Image {
   @Column(length = 100)
   private String title;
 
+  @Column(length = 1024)
+  private String description;
+
   @NonNull
   @Column(nullable = false, updatable = false)
   @JsonIgnore
   private String path;
 
   @NonNull
-  @Column(nullable = false, updatable = false)
-  private String name;
-
-  @NonNull
-  @Column(nullable = false, updatable = false)
-  private String contentType;
-
-  @Column(length = 1024)
-  private String description;
-
-  @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn(name = "contributor_id", nullable = false, updatable = false)
-  private User contributor;
+  @JoinColumn(name = "creator_id", nullable = false, updatable = false)
+  private User creator;
 
   @NonNull
-  @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
-  @OrderBy("created DESC")
-  private List<Gallery> galleries = new LinkedList<>();
+  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE,
+      CascadeType.PERSIST, CascadeType.REFRESH})
+  @JoinTable(joinColumns = {@JoinColumn(name = "gallery_id")},
+      inverseJoinColumns = {@JoinColumn(name = "image_id")})
+  @OrderBy("title ASC")
+  private List<Image> images = new LinkedList<>();
 
   @NonNull
   public UUID getId() {
@@ -104,30 +93,12 @@ public class Image {
     return updated;
   }
 
-  @NonNull
-  public String getPath() {
-    return path;
+  public String getTitle() {
+    return title;
   }
 
-  public void setPath(@NonNull String path) {
-    this.path = path;
-  }
-
-  @NonNull
-  public String getName() {
-    return name;
-  }
-
-  public void setName(@NonNull String name) {
-    this.name = name;
-  }
-
-  public String getContentType() {
-    return contentType;
-  }
-
-  public void setContentType(String contentType) {
-    this.contentType = contentType;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getDescription() {
@@ -139,39 +110,20 @@ public class Image {
   }
 
   @NonNull
-  public User getContributor() {
-    return contributor;
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(@NonNull String path) {
+    this.path = path;
   }
 
   @NonNull
-  public List<Gallery> getGalleries() {
-    return galleries;
+  public User getCreator() {
+    return creator;
   }
 
-  @Override
-  public int hashCode() {
-    return (id == null) ? 0 : id.hashCode();
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    return Objects.equals(this.id,((Image) obj).id);
-  }
-
-  public URI getHref() {
-    return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
-  }
-
-//  @PostConstruct
-//  private void initHateoas() {
-//    //noinspection ResultOfMethodCallIgnored
-//    entityLinks.toString();
-//  }
-
-  @Autowired
-  public static void setEntityLinks(
-      EntityLinks entityLinks) {
-    Image.entityLinks = entityLinks;
+  public void setCreator(@NonNull User contributor) {
+    this.creator = contributor;
   }
 }
-
