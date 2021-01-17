@@ -1,4 +1,9 @@
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 15MB
   security:
     oauth2:
       resourceserver:
@@ -23,3 +28,15 @@ server:
   port: 18181
   servlet:
     context-path: /gallery
+
+upload:
+  use-application-home: true
+  path: uploads
+  filename:
+    unknown: (uknown)
+    format: "%1$s-%2$d.%3$s"
+    randomizer-limit: 1000000
+    timestamp:
+      format: yyyyMMddHmmssSSS
+      time-zone: UTC
+

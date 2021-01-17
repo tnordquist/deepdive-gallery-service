@@ -2,10 +2,10 @@ package edu.cnm.deepdive.deepdivegallery.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.net.URI;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,7 +23,6 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -37,7 +36,10 @@ import org.springframework.stereotype.Component;
     }
 )
 @Component
-public class Image {
+public class Image implements Comparable<Image> {
+
+  private static final Comparator<Image> NATURAL_COMPARATOR =
+      Comparator.comparing((img) -> (img.title != null) ? img.title : img.name);
 
   private static EntityLinks entityLinks;
 
@@ -87,7 +89,7 @@ public class Image {
   @NonNull
   @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
   @OrderBy("created DESC")
-  private List<Gallery> galleries = new LinkedList<>();
+  private final List<Gallery> galleries = new LinkedList<>();
 
   @NonNull
   public UUID getId() {
@@ -104,6 +106,11 @@ public class Image {
     return updated;
   }
 
+  /**
+   * Returns a reference (a {@link String} representation of a {@link java.nio.file.Path}, {@link
+   * URI}, etc.) to the location of this image. This should be treated as an &ldquo;opaque&rdquo;
+   * value, meaningful only to the storage service.
+   */
   @NonNull
   public String getPath() {
     return path;
@@ -113,15 +120,24 @@ public class Image {
     this.path = path;
   }
 
+  /**
+   * Returns the original filename of this image.
+   */
   @NonNull
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the original filename of this image to the specified {@code name}.
+   */
   public void setName(@NonNull String name) {
     this.name = name;
   }
 
+  /**
+   * Returns the MIME type of this image.
+   */
   public String getContentType() {
     return contentType;
   }
@@ -138,9 +154,19 @@ public class Image {
     this.description = description;
   }
 
+  /**
+   * Returns the {@link User} that contributed this image.
+   */
   @NonNull
   public User getContributor() {
     return contributor;
+  }
+
+  /**
+   * Sets this image's contributor to the specified {@link User}.
+   */
+  public void setContributor(@NonNull User contributor) {
+    this.contributor = contributor;
   }
 
   @NonNull
@@ -148,16 +174,56 @@ public class Image {
     return galleries;
   }
 
+  /**
+   * Returns the {@link String#hashCode()} of the original filename. Since this filename will not
+   * change on or after persistence, this guarantees that the hash for an {@code Image} instance
+   * does not change.
+   */
   @Override
   public int hashCode() {
-    return (id == null) ? 0 : id.hashCode();
+    //noinspection ConstantConditions
+    return (name != null) ? name.hashCode() : 0;
   }
 
+
+  /**
+   * Compares this image with {@code obj}, to test for equality. In general, distinct instances that
+   * are not yet persisted will not be considered equal, regardless of content; persisted instances
+   * will only be considered equal if the primary key values are equal.
+   *
+   * @param obj object to be tested for equality with this image.
+   * @return {@code true} if {@code this} and {@code obj} may be considered equal; false otherwise.
+   */
   @Override
   public boolean equals(Object obj) {
-    return Objects.equals(this.id,((Image) obj).id);
+    boolean equal;
+    if (this == obj) {
+      equal = true;
+    } else if (obj instanceof Image) {
+      Image other = (Image) obj;
+      //noinspection ConstantConditions
+      equal = id != null || other.id != null && id.equals(other.id);
+    } else {
+      equal = false;
+    }
+    return equal;
   }
 
+  /**
+   * Compares this image to {@code other} by {@code title}, then {@code name} if {@code title} is
+   * {@code null}, for the purpose of &ldquo;natural&rdquo; ordering.
+   *
+   * @param other Instance compared to {@code this}.
+   * @return Negative if {@code this < other}, positive if {@code this > other}, zero otherwise.
+   */
+  @Override
+  public int compareTo(Image other) {
+    return NATURAL_COMPARATOR.compare(this, other);
+  }
+
+  /**
+   * Returns the location of REST resource representation of this image.
+   */
   public URI getHref() {
     return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
   }
@@ -168,10 +234,10 @@ public class Image {
 //    entityLinks.toString();
 //  }
 
-  @Autowired
-  public static void setEntityLinks(
-      EntityLinks entityLinks) {
-    Image.entityLinks = entityLinks;
-  }
+//  @Autowired
+//  public static void setEntityLinks(
+//      EntityLinks entityLinks) {
+//    Image.entityLinks = entityLinks;
+//  }
 }
 

@@ -6,7 +6,7 @@ import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 
 @SpringBootApplication
-//@EnableHypermediaSupport(type = {HypermediaType.HAL})
+@EnableHypermediaSupport(type = {HypermediaType.HAL})
 public class DeepdiveGalleryApplication {
 
   public static void main(String[] args) {
