@@ -3,7 +3,7 @@ package edu.cnm.deepdive.deepdivegallery.service;
 import edu.cnm.deepdive.deepdivegallery.model.dao.ImageRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
-import edu.cnm.deepdive.deepdivegallery.service.StorageService.FilenameTranslation;
+import edu.cnm.deepdive.deepdivegallery.service.StorageService.StorageReference;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Optional;
@@ -75,10 +75,10 @@ public class ImageService {
   }
 
   public Image store(MultipartFile file, User contributor) throws IOException {
-    FilenameTranslation translation = storageService.store(file);
+    StorageReference translation = storageService.store(file);
     Image image = new Image();
-    image.setName(translation.getOriginalFilename());
-    image.setPath(translation.getNewFilename());
+    image.setName(((StorageReference) translation).getFilename());
+    image.setPath(translation.getReference());
     image.setContributor(contributor);
     image.setContentType(file.getContentType());
     return imageRepository.save(image);
