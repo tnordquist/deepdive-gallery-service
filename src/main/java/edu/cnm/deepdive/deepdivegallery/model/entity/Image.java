@@ -208,17 +208,7 @@ public class Image implements Comparable<Image> {
    */
   @Override
   public boolean equals(Object obj) {
-    boolean equal;
-    if (this == obj) {
-      equal = true;
-    } else if (obj instanceof Image) {
-      Image other = (Image) obj;
-      //noinspection ConstantConditions
-      equal = id != null || other.id != null && id.equals(other.id);
-    } else {
-      equal = false;
-    }
-    return equal;
+    return (this == obj || (obj instanceof Image && this.id.equals(((Image) obj).id)));
   }
 
   /**
@@ -248,8 +238,8 @@ public class Image implements Comparable<Image> {
   }
 
   @Autowired
-  public static void setEntityLinks(
-      EntityLinks entityLinks) {
+  public void setEntityLinks(
+      @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") EntityLinks entityLinks) {
     Image.entityLinks = entityLinks;
   }
 }
