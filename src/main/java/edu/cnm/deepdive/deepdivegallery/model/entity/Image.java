@@ -2,6 +2,8 @@ package edu.cnm.deepdive.deepdivegallery.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.net.URI;
 import java.util.Comparator;
@@ -9,6 +11,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Component;
         @Index(columnList = "title")
     }
 )
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
     value = {"id", "created", "contributor"},
     allowGetters = true, ignoreUnknown = true
@@ -233,14 +237,15 @@ public class Image implements Comparable<Image> {
    * Returns the location of REST resource representation of this image.
    */
   public URI getHref() {
+    //noinspection ConstantConditions
     return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
   }
 
-//  @PostConstruct
-//  private void initHateoas() {
-//    //noinspection ResultOfMethodCallIgnored
-//    entityLinks.toString();
-//  }
+  @PostConstruct
+  private void initHateoas() {
+    //noinspection ResultOfMethodCallIgnored
+    entityLinks.toString();
+  }
 
   @Autowired
   public static void setEntityLinks(
