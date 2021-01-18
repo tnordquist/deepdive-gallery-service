@@ -1,6 +1,8 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Date;
@@ -23,6 +25,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -35,6 +38,11 @@ import org.springframework.stereotype.Component;
         @Index(columnList = "title")
     }
 )
+@JsonIgnoreProperties(
+    value = {"id", "created", "contributor"},
+    allowGetters = true, ignoreUnknown = true
+)
+@JsonPropertyOrder({"id", "href", "created", "contributor", "name", "description"})
 @Component
 public class Image implements Comparable<Image> {
 
@@ -43,7 +51,6 @@ public class Image implements Comparable<Image> {
 
   private static EntityLinks entityLinks;
 
-  @NonNull
   @Id
   @GeneratedValue(generator = "uuid2")
   @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -89,6 +96,7 @@ public class Image implements Comparable<Image> {
   @NonNull
   @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
   @OrderBy("created DESC")
+  @JsonIgnore
   private final List<Gallery> galleries = new LinkedList<>();
 
   @NonNull
@@ -234,10 +242,10 @@ public class Image implements Comparable<Image> {
 //    entityLinks.toString();
 //  }
 
-//  @Autowired
-//  public static void setEntityLinks(
-//      EntityLinks entityLinks) {
-//    Image.entityLinks = entityLinks;
-//  }
+  @Autowired
+  public static void setEntityLinks(
+      EntityLinks entityLinks) {
+    Image.entityLinks = entityLinks;
+  }
 }
 
