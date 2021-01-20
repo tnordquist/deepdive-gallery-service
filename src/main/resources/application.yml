@@ -15,14 +15,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-#   properties:
-#     javax:
-#       persistence:
-#         schema-generation:
-#           create-source: metadata
-#           scripts:
-#             action: create
-#             create-target: ddl.sql
+#    properties:
+#      javax:
+#        persistence:
+#          schema-generation:
+#            create-source: metadata
+#            scripts:
+#              action: create
+#              create-target: ddl.sql
 
 server:
   port: 18181

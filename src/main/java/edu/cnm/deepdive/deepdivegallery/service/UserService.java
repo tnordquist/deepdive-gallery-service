@@ -4,6 +4,7 @@ import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,15 @@ public class UserService implements Converter<Jwt, UsernamePasswordAuthenticatio
 
   public User getOrCreate(String oauthKey, String displayName) {
     return userRepository.findFirstByOauthKey(oauthKey)
+        .map((user) -> {
+          user.setConnected(new Date());
+          return userRepository.save(user);
+        })
         .orElseGet(() -> {
           User user = new User();
           user.setOauthKey(oauthKey);
           user.setDisplayName(displayName);
+          user.setConnected(new Date());
           return userRepository.save(user);
         });
   }

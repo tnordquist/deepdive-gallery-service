@@ -1,10 +1,10 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.PostConstruct;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +23,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.server.EntityLinks;
 import org.springframework.lang.NonNull;
 
 @SuppressWarnings("JpaDataSourceORMInspection")
@@ -34,6 +36,8 @@ import org.springframework.lang.NonNull;
     }
 )
 public class Gallery {
+
+  private static EntityLinks entityLinks;
 
   @NonNull
   @Id
@@ -61,11 +65,6 @@ public class Gallery {
   private String description;
 
   @NonNull
-  @Column(nullable = false, updatable = false)
-  @JsonIgnore
-  private String path;
-
-  @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "creator_id", nullable = false, updatable = false)
   private User creator;
@@ -76,7 +75,7 @@ public class Gallery {
   @JoinTable(joinColumns = {@JoinColumn(name = "gallery_id")},
       inverseJoinColumns = {@JoinColumn(name = "image_id")})
   @OrderBy("title ASC")
-  private List<Image> images = new LinkedList<>();
+  private final List<Image> images = new LinkedList<>();
 
   @NonNull
   public UUID getId() {
@@ -110,20 +109,36 @@ public class Gallery {
   }
 
   @NonNull
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(@NonNull String path) {
-    this.path = path;
-  }
-
-  @NonNull
   public User getCreator() {
     return creator;
   }
 
   public void setCreator(@NonNull User contributor) {
     this.creator = contributor;
+  }
+
+  @NonNull
+  public List<Image> getImages() {
+    return images;
+  }
+
+  /**
+   * Returns the location of REST resource representation of this image.
+   */
+//  public URI getHref() {
+//    //noinspection ConstantConditions
+//    return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
+//  }
+
+  @PostConstruct
+  private void initHateoas() {
+    //noinspection ResultOfMethodCallIgnored
+    entityLinks.toString();
+  }
+
+  @Autowired
+  public void setEntityLinks(
+      EntityLinks entityLinks) {
+    Gallery.entityLinks = entityLinks;
   }
 }

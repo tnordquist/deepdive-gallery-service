@@ -46,7 +46,8 @@ import org.springframework.stereotype.Component;
     value = {"id", "created", "contributor"},
     allowGetters = true, ignoreUnknown = true
 )
-@JsonPropertyOrder({"id", "href", "created", "contributor", "name", "description"})
+@JsonPropertyOrder({"id", "title", "description", "href", "created", "contributor", "name",
+    "description"})
 @Component
 public class Image implements Comparable<Image> {
 
