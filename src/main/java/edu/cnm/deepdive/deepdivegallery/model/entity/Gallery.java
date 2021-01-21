@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,9 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -70,11 +70,11 @@ public class Gallery {
   private User creator;
 
   @NonNull
-  @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE,
+  @OneToMany(mappedBy = "gallery", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,
+      CascadeType.MERGE,
       CascadeType.PERSIST, CascadeType.REFRESH})
-  @JoinTable(joinColumns = {@JoinColumn(name = "gallery_id")},
-      inverseJoinColumns = {@JoinColumn(name = "image_id")})
   @OrderBy("title ASC")
+  @JsonIgnore
   private final List<Image> images = new LinkedList<>();
 
   @NonNull
@@ -129,7 +129,6 @@ public class Gallery {
 //    //noinspection ConstantConditions
 //    return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
 //  }
-
   @PostConstruct
   private void initHateoas() {
     //noinspection ResultOfMethodCallIgnored

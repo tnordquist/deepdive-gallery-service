@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -19,9 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -98,11 +94,10 @@ public class Image implements Comparable<Image> {
   @JoinColumn(name = "contributor_id", nullable = false, updatable = false)
   private User contributor;
 
-  @NonNull
-  @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
-  @OrderBy("created DESC")
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "gallery_id", nullable = false, updatable = false)
   @JsonIgnore
-  private final List<Gallery> galleries = new LinkedList<>();
+  private Gallery gallery;
 
   @NonNull
   public UUID getId() {
@@ -148,6 +143,14 @@ public class Image implements Comparable<Image> {
     this.name = name;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   /**
    * Returns the MIME type of this image.
    */
@@ -182,9 +185,12 @@ public class Image implements Comparable<Image> {
     this.contributor = contributor;
   }
 
-  @NonNull
-  public List<Gallery> getGalleries() {
-    return galleries;
+  public Gallery getGallery() {
+    return gallery;
+  }
+
+  public void setGallery(Gallery gallery) {
+    this.gallery = gallery;
   }
 
   /**

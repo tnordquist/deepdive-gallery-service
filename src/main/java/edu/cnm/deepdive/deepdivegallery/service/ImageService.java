@@ -1,9 +1,9 @@
 package edu.cnm.deepdive.deepdivegallery.service;
 
 import edu.cnm.deepdive.deepdivegallery.model.dao.ImageRepository;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
-import edu.cnm.deepdive.deepdivegallery.service.StorageService.StorageReference;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Optional;
@@ -11,7 +11,10 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Streamable;
+import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -30,7 +33,7 @@ public class ImageService {
   public ImageService(ImageRepository imageRepository, StorageService storageService) {
     this.imageRepository = imageRepository;
     this.storageService = storageService;
-    }
+  }
 
   public Optional<Image> get(UUID id) {
     return imageRepository.findById(id);
@@ -74,13 +77,23 @@ public class ImageService {
     return imageRepository.save(image);
   }
 
-  public Image store(MultipartFile file, User contributor) throws IOException {
-    StorageReference translation = storageService.store(file);
+  public Image store(@NonNull MultipartFile file, @NonNull User contributor, Gallery gallery,
+      String title,
+      String description)
+      throws IOException, HttpMediaTypeNotAcceptableException {
+    String originalFilename = file.getOriginalFilename();
+    String contentType = file.getContentType();
+    String reference = storageService.store(file);
     Image image = new Image();
-    image.setName(((StorageReference) translation).getFilename());
-    image.setPath(translation.getReference());
     image.setContributor(contributor);
-    image.setContentType(file.getContentType());
+    image.setGallery(gallery);
+    image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
+    image.setPath(reference);
+    image.setContributor(contributor);
+    image.setContentType(
+        (contentType != null) ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE);
+    image.setTitle(title);
+    image.setDescription(description);
     return imageRepository.save(image);
   }
 

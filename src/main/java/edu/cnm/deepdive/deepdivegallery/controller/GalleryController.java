@@ -3,6 +3,7 @@ package edu.cnm.deepdive.deepdivegallery.controller;
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
@@ -36,9 +37,52 @@ public class GalleryController {
     this.galleryRepository = galleryRepository;
   }
 
+//  @PutMapping(value = "/{galleryId}/images/{imageId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public Gallery addImage(@PathVariable UUID galleryId, @PathVariable UUID imageId) {
+//    return
+//  }
+  /**
+   * Stores uploaded file content along with a new {@link Image} instance referencing the content.
+   *
+   * @param file MIME content of single file upload.
+   * @param auth Authentication token with {@link User} principal.
+   * @return Instance of {@link Photo} created &amp; persisted for the uploaded content.
+   */
+/*  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Creator")
+  public ResponseEntity<Image> postByCreator(
+      @PathVariable UUID eventId,
+      @RequestParam MultipartFile file,
+      @RequestParam(required = false) Double latitude,
+      @RequestParam(required = false) Double longitude,
+      @RequestParam(required = false) String caption,
+      Authentication auth) {
+    return galleryService.get(eventId, (User) auth.getPrincipal())
+        .map((event) -> securePost(event, file, latitude, longitude, caption,
+            (User) auth.getPrincipal()))
+        .orElseThrow(PhotoNotFoundException::new);
+  }*/ // TODO work on error
+
+  /**
+   * Creates a new Gallery
+   * @param gallery
+   * @param auth
+   * @return
+   */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Gallery post(@RequestBody Gallery gallery, Authentication auth) {
     return galleryService.newGallery(gallery, (User) auth.getPrincipal());
   }
+
+/*  private ResponseEntity<Photo> securePost(Gallery event, MultipartFile file, User user) {
+    try {
+      Image image = imageService.store(file, user, event);
+      return ResponseEntity.created(photo.getHref()).body(photo);
+    } catch (IOException e) {
+      throw new StorageException(e);
+    } catch (HttpMediaTypeNotAcceptableException e) {
+      throw new MimeTypeNotAllowedException();
+    }
+  }*/
+
 }
