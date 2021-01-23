@@ -1,7 +1,6 @@
 package edu.cnm.deepdive.deepdivegallery.service;
 
 import edu.cnm.deepdive.deepdivegallery.model.dao.ImageRepository;
-import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import java.io.IOException;
@@ -77,7 +76,7 @@ public class ImageService {
     return imageRepository.save(image);
   }
 
-  public Image store(@NonNull MultipartFile file, @NonNull User contributor, Gallery gallery,
+  public Image store(@NonNull MultipartFile file, @NonNull User contributor, /*Gallery gallery,*/
       String title,
       String description)
       throws IOException, HttpMediaTypeNotAcceptableException {
@@ -86,7 +85,7 @@ public class ImageService {
     String reference = storageService.store(file);
     Image image = new Image();
     image.setContributor(contributor);
-    image.setGallery(gallery);
+//    image.setGallery(gallery);
     image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
     image.setPath(reference);
     image.setContributor(contributor);

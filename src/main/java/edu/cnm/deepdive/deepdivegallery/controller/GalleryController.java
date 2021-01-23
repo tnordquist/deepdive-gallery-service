@@ -73,16 +73,4 @@ public class GalleryController {
   public Gallery post(@RequestBody Gallery gallery, Authentication auth) {
     return galleryService.newGallery(gallery, (User) auth.getPrincipal());
   }
-
-/*  private ResponseEntity<Photo> securePost(Gallery event, MultipartFile file, User user) {
-    try {
-      Image image = imageService.store(file, user, event);
-      return ResponseEntity.created(photo.getHref()).body(photo);
-    } catch (IOException e) {
-      throw new StorageException(e);
-    } catch (HttpMediaTypeNotAcceptableException e) {
-      throw new MimeTypeNotAllowedException();
-    }
-  }*/
-
 }

@@ -7,6 +7,7 @@ import edu.cnm.deepdive.deepdivegallery.service.UserService;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.core.io.Resource;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +50,6 @@ public class ImageController {
   private final UserService userService;
   private final ImageService imageService;
 
-
   public ImageController(UserService userService,
       ImageService imageService) {
     this.userService = userService;
@@ -70,15 +71,30 @@ public class ImageController {
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Image> post(@RequestParam MultipartFile file, Authentication auth) {
+  public ResponseEntity<Image> post(
+      @RequestParam(required = false) @Length(min = 3) String title,
+      @RequestParam(required = false) @Length(min = 3) String description,
+      @RequestParam MultipartFile file, Authentication auth) {
     try {
-      Image image = imageService.store(file, (User) auth.getPrincipal());
+      Image image = imageService.store(file, (User) auth.getPrincipal(), title, description);
       return ResponseEntity.created(image.getHref()).body(image);
     } catch (IOException e) {
-      throw new ResponseStatusException(
-          HttpStatus.INTERNAL_SERVER_ERROR, NOT_STORED_MESSAGE, e);
+      throw new StorageException(e);
+    } catch (HttpMediaTypeNotAcceptableException e) {
+      throw new MimeTypeNotAllowedException();
     }
   }
+
+//  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//  public ResponseEntity<Image> post(@RequestParam MultipartFile file, Authentication auth) {
+//    try {
+//      Image image = imageService.store(file, (User) auth.getPrincipal());
+//      return ResponseEntity.created(image.getHref()).body(image);
+//    } catch (IOException | HttpMediaTypeNotAcceptableException e) {
+//      throw new ResponseStatusException(
+//          HttpStatus.INTERNAL_SERVER_ERROR, NOT_STORED_MESSAGE, e);
+//    }
+//  }
 
   @GetMapping(value = ParameterPatterns.UUID_PATH_PARAMETER_PATTERN, produces = MediaType.APPLICATION_JSON_VALUE)
   public Image get(@PathVariable UUID id, Authentication auth) {

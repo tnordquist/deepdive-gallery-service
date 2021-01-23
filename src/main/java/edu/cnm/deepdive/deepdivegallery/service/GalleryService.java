@@ -45,7 +45,7 @@ public class GalleryService {
    * @return an Event object, if there are any associated with the User.
    */
   public Optional<Gallery> get(UUID id, User user) {
-    return galleryRepository.findByIdAndUser(id, user);
+    return galleryRepository.findByIdAndCreator(id, user);
   }
 
   public Optional<Gallery> get(UUID galleryId) {

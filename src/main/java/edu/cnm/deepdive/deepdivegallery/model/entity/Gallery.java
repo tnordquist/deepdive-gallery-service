@@ -1,6 +1,5 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class Gallery {
 
   @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
-  @JoinColumn(name = "creator_id", nullable = false, updatable = false)
+  @JoinColumn(name = "user_id", nullable = false, updatable = false)
   private User creator;
 
   @NonNull
@@ -74,7 +73,6 @@ public class Gallery {
       CascadeType.MERGE,
       CascadeType.PERSIST, CascadeType.REFRESH})
   @OrderBy("title ASC")
-  @JsonIgnore
   private final List<Image> images = new LinkedList<>();
 
   @NonNull

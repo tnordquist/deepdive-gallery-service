@@ -18,5 +18,5 @@ public interface GalleryRepository extends JpaRepository<Gallery, UUID> {
    * @param user is a User object.
    * @return An event associated with the user that created the event.
    */
-  Optional<Gallery> findByIdAndUser(UUID id, User user);
+  Optional<Gallery> findByIdAndCreator(UUID id, User creator);
 }
