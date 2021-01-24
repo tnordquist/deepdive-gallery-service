@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class GalleryService {
@@ -39,13 +41,13 @@ public class GalleryService {
   }
 
   /**
-   * This method returns an event by passing in the User who created it and the associated event id.
-   * @param id this is the event primary key.
+   * This method returns a gallery by passing in the User who created it and the associated gallery id.
+   * @param id this is the gallery primary key.
    * @param user this is the current signed in User of the application
    * @return an Event object, if there are any associated with the User.
    */
-  public Optional<Gallery> get(UUID id, User user) {
-    return galleryRepository.findByIdAndCreator(id, user);
+  public Optional<Gallery> get(UUID id, User creator) {
+    return galleryRepository.findByIdAndCreator(id, creator);
   }
 
   public Optional<Gallery> get(UUID galleryId) {
@@ -55,5 +57,15 @@ public class GalleryService {
   public Optional<List<Image>> getImages(UUID galleryId) {
     return get(galleryId)
         .map(Gallery::getImages);
+  }
+
+  public static class GalleryNotFoundException extends ResponseStatusException {
+
+    private static final String NOT_FOUND_REASON = "Event not found";
+
+    public GalleryNotFoundException() {
+      super(HttpStatus.NOT_FOUND, NOT_FOUND_REASON);
+    }
+
   }
 }

@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.deepdivegallery.service;
 
 import edu.cnm.deepdive.deepdivegallery.model.dao.ImageRepository;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import java.io.IOException;
@@ -10,11 +11,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.Streamable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Implements high-level operations on {@link Image} instances, including file store operations and
@@ -76,7 +79,7 @@ public class ImageService {
     return imageRepository.save(image);
   }
 
-  public Image store(@NonNull MultipartFile file, @NonNull User contributor, /*Gallery gallery,*/
+  public Image store(@NonNull MultipartFile file, @NonNull User contributor, @NonNull Gallery gallery,
       String title,
       String description)
       throws IOException, HttpMediaTypeNotAcceptableException {
@@ -85,7 +88,7 @@ public class ImageService {
     String reference = storageService.store(file);
     Image image = new Image();
     image.setContributor(contributor);
-//    image.setGallery(gallery);
+    image.setGallery(gallery);
     image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
     image.setPath(reference);
     image.setContributor(contributor);
@@ -94,6 +97,16 @@ public class ImageService {
     image.setTitle(title);
     image.setDescription(description);
     return imageRepository.save(image);
+  }
+
+  public static class ImageNotFoundException extends ResponseStatusException {
+
+    private static final String NOT_FOUND_REASON = "Photo not found";
+
+    public ImageNotFoundException() {
+      super(HttpStatus.NOT_FOUND, NOT_FOUND_REASON);
+    }
+
   }
 
   public Resource retrieve(Image image) throws MalformedURLException {

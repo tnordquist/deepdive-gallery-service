@@ -96,7 +96,6 @@ public class Image implements Comparable<Image> {
 
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "gallery_id", nullable = false, updatable = false)
-  @JsonIgnore
   private Gallery gallery;
 
   @NonNull

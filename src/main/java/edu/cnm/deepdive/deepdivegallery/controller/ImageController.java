@@ -1,13 +1,15 @@
 package edu.cnm.deepdive.deepdivegallery.controller;
 
+import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
+import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
+import edu.cnm.deepdive.deepdivegallery.service.ImageService.ImageNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.core.io.Resource;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.HttpHeaders;
@@ -49,11 +51,14 @@ public class ImageController {
 
   private final UserService userService;
   private final ImageService imageService;
+  private final GalleryService galleryService;
 
   public ImageController(UserService userService,
-      ImageService imageService) {
+      ImageService imageService,
+      GalleryService galleryService) {
     this.userService = userService;
     this.imageService = imageService;
+    this.galleryService = galleryService;
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +75,7 @@ public class ImageController {
     ).toList();
   }
 
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+/*  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Image> post(
       @RequestParam(required = false) @Length(min = 3) String title,
       @RequestParam(required = false) @Length(min = 3) String description,
@@ -83,6 +88,25 @@ public class ImageController {
     } catch (HttpMediaTypeNotAcceptableException e) {
       throw new MimeTypeNotAllowedException();
     }
+  }*/
+
+  /**
+   * Stores uploaded file content along with a new {@link Photo} instance referencing the content.
+   *
+   * @param file MIME content of single file upload.
+   * @param auth Authentication token with {@link User} principal.
+   * @return Instance of {@link Image} created &amp; persisted for the uploaded content.
+   */
+  @PostMapping(value = "/{galleryId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Image> postByCreator(
+      @PathVariable UUID galleryId,
+      @RequestParam MultipartFile file,
+      @RequestParam(required = false) String title,
+      @RequestParam(required = false) String description,
+      Authentication auth) {
+    return galleryService.get(galleryId, (User) auth.getPrincipal())
+        .map((gallery) -> securePost(gallery, file, (User) auth.getPrincipal(), title, description))
+        .orElseThrow(ImageNotFoundException::new);
   }
 
 //  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -144,6 +168,18 @@ public class ImageController {
           }
         })
         .orElseThrow(this::imageNotFound);
+  }
+
+  private ResponseEntity<Image> securePost(Gallery gallery, MultipartFile file, User user,
+      String title, String description) {
+    try {
+      Image image = imageService.store(file, user, gallery, title, description);
+      return ResponseEntity.created(image.getHref()).body(image);
+    } catch (IOException e) {
+      throw new StorageException(e);
+    } catch (HttpMediaTypeNotAcceptableException e) {
+      throw new MimeTypeNotAllowedException();
+    }
   }
 
   private String dispositionHeader(String filename) {

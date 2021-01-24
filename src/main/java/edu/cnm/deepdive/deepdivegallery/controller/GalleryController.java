@@ -6,11 +6,15 @@ import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
+import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
+import java.util.UUID;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,6 +65,19 @@ public class GalleryController {
             (User) auth.getPrincipal()))
         .orElseThrow(PhotoNotFoundException::new);
   }*/ // TODO work on error
+
+  /**
+   * This method gets the event specified for the User who created this event.
+   *
+   * @param id   the associated event id
+   * @param auth the authentication object
+   * @return the event for the creator.
+   */
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, headers = "Creator")
+  public Gallery getGallery(@PathVariable UUID id, Authentication auth) {
+    return galleryService.get(id, (User) auth.getPrincipal())
+        .orElseThrow(GalleryNotFoundException::new);
+  }
 
   /**
    * Creates a new Gallery
