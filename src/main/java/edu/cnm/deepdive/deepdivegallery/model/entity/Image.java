@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
+import edu.cnm.deepdive.deepdivegallery.view.FlatImage;
+import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Date;
@@ -45,7 +49,7 @@ import org.springframework.stereotype.Component;
 @JsonPropertyOrder({"id", "title", "description", "href", "created", "contributor", "name",
     "description"})
 @Component
-public class Image implements Comparable<Image> {
+public class Image implements Comparable<Image>, FlatImage {
 
   private static final Comparator<Image> NATURAL_COMPARATOR =
       Comparator.comparing((img) -> (img.title != null) ? img.title : img.name);
@@ -92,10 +96,12 @@ public class Image implements Comparable<Image> {
   @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "contributor_id", nullable = false, updatable = false)
+  @JsonSerialize(as = FlatUser.class)
   private User contributor;
 
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "gallery_id", nullable = false, updatable = false)
+  @JsonSerialize(as = FlatGallery.class)
   private Gallery gallery;
 
   @NonNull

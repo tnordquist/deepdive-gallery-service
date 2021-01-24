@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
+import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,7 +37,7 @@ import org.springframework.lang.NonNull;
         @Index(columnList = "title")
     }
 )
-public class Gallery {
+public class Gallery implements FlatGallery {
 
   private static EntityLinks entityLinks;
 
@@ -66,6 +69,7 @@ public class Gallery {
   @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "user_id", nullable = false, updatable = false)
+  @JsonSerialize(as = FlatUser.class)
   private User creator;
 
   @NonNull
