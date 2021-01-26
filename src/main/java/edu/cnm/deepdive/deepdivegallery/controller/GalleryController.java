@@ -5,11 +5,15 @@ import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
+import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
+import java.util.UUID;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +40,37 @@ public class GalleryController {
     this.galleryRepository = galleryRepository;
   }
 
+//  @PutMapping(value = "/{galleryId}/images/{imageId}",consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public Gallery addImage(@PathVariable UUID galleryId, @PathVariable UUID imageId) {
+//    return
+//  }
+
+/*  @PostMapping(value = "/{galleryId}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Gallery addImage(
+      @PathVariable UUID galleryId,
+      Authentication auth) {
+
+  }*/
+
+  /**
+   * This method gets the event specified for the User who created this event.
+   *
+   * @param id   the associated event id
+   * @param auth the authentication object
+   * @return the event for the creator.
+   */
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Gallery getGallery(@PathVariable UUID id, Authentication auth) {
+    return galleryService.get(id, (User) auth.getPrincipal())
+        .orElseThrow(GalleryNotFoundException::new);
+  }
+
+  /**
+   * Creates a new Gallery
+   * @param gallery
+   * @param auth
+   * @return
+   */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Gallery post(@RequestBody Gallery gallery, Authentication auth) {

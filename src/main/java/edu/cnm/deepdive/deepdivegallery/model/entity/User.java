@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.net.URI;
 import java.util.Date;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ import org.springframework.stereotype.Component;
     allowGetters = true, ignoreUnknown = true
 )
 @Component
-public class User {
+public class User implements FlatUser {
 
   private static EntityLinks entityLinks;
 

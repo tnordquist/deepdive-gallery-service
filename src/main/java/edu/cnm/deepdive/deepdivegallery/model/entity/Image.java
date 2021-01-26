@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
+import edu.cnm.deepdive.deepdivegallery.view.FlatImage;
+import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.persistence.Column;
@@ -19,9 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -49,7 +49,7 @@ import org.springframework.stereotype.Component;
 @JsonPropertyOrder({"id", "title", "description", "href", "created", "contributor", "name",
     "description"})
 @Component
-public class Image implements Comparable<Image> {
+public class Image implements Comparable<Image>, FlatImage {
 
   private static final Comparator<Image> NATURAL_COMPARATOR =
       Comparator.comparing((img) -> (img.title != null) ? img.title : img.name);
@@ -96,13 +96,13 @@ public class Image implements Comparable<Image> {
   @NonNull
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "contributor_id", nullable = false, updatable = false)
+  @JsonSerialize(as = FlatUser.class)
   private User contributor;
 
-  @NonNull
-  @ManyToMany(mappedBy = "images", fetch = FetchType.LAZY)
-  @OrderBy("created DESC")
-  @JsonIgnore
-  private final List<Gallery> galleries = new LinkedList<>();
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "gallery_id", nullable = false, updatable = false)
+  @JsonSerialize(as = FlatGallery.class)
+  private Gallery gallery;
 
   @NonNull
   public UUID getId() {
@@ -148,6 +148,14 @@ public class Image implements Comparable<Image> {
     this.name = name;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   /**
    * Returns the MIME type of this image.
    */
@@ -182,9 +190,12 @@ public class Image implements Comparable<Image> {
     this.contributor = contributor;
   }
 
-  @NonNull
-  public List<Gallery> getGalleries() {
-    return galleries;
+  public Gallery getGallery() {
+    return gallery;
+  }
+
+  public void setGallery(Gallery gallery) {
+    this.gallery = gallery;
   }
 
   /**
@@ -228,7 +239,6 @@ public class Image implements Comparable<Image> {
    * Returns the location of REST resource representation of this image.
    */
   public URI getHref() {
-    //noinspection ConstantConditions
     return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
   }
 
