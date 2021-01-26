@@ -79,6 +79,39 @@ public class ImageService {
     return imageRepository.save(image);
   }
 
+  /**
+   * Stores the image data to the file store, then constructs and returns the corresponding instance
+   * of {@link Image}. The latter includes the specified {@code title} and {@code description}
+   * metadata, along with a reference to {@code contributor}.
+   *
+   * @param file        Uploaded file content.
+   * @param title       Optional (null is allowed) title of the image.
+   * @param description Optional (null is allowed) description of the image.
+   * @param contributor Uploading {@link User}.
+   * @return {@link Image} instance referencing and describing the uploaded content.
+   * @throws IOException                         If the file content cannot&mdash;for any
+   *                                             reason&mdash;be written to the file store.
+   * @throws HttpMediaTypeNotAcceptableException If the MIME type of the uploaded file is not on the
+   *                                             whitelist.
+   */
+  public Image store(
+      @NonNull MultipartFile file, String title, String description, @NonNull User contributor)
+      throws IOException, HttpMediaTypeNotAcceptableException {
+    String originalFilename = file.getOriginalFilename();
+    String contentType = file.getContentType();
+    String reference = storageService.store(file);
+    Image image = new Image();
+    image.setTitle(title);
+    image.setDescription(description);
+    image.setContributor(contributor);
+    image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
+    image.setContentType(
+        (contentType != null) ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE);
+    image.setPath(reference);
+    return save(image);
+  }
+
+
   public Image store(@NonNull MultipartFile file, @NonNull User contributor, @NonNull Gallery gallery,
       String title,
       String description)

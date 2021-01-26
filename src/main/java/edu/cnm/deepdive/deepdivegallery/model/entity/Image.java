@@ -239,7 +239,6 @@ public class Image implements Comparable<Image>, FlatImage {
    * Returns the location of REST resource representation of this image.
    */
   public URI getHref() {
-    //noinspection ConstantConditions
     return (id != null) ? entityLinks.linkForItemResource(Image.class, id).toUri() : null;
   }
 

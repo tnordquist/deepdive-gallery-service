@@ -3,7 +3,6 @@ package edu.cnm.deepdive.deepdivegallery.controller;
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
-import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
@@ -45,26 +44,13 @@ public class GalleryController {
 //    public Gallery addImage(@PathVariable UUID galleryId, @PathVariable UUID imageId) {
 //    return
 //  }
-  /**
-   * Stores uploaded file content along with a new {@link Image} instance referencing the content.
-   *
-   * @param file MIME content of single file upload.
-   * @param auth Authentication token with {@link User} principal.
-   * @return Instance of {@link Photo} created &amp; persisted for the uploaded content.
-   */
-/*  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, headers = "Creator")
-  public ResponseEntity<Image> postByCreator(
-      @PathVariable UUID eventId,
-      @RequestParam MultipartFile file,
-      @RequestParam(required = false) Double latitude,
-      @RequestParam(required = false) Double longitude,
-      @RequestParam(required = false) String caption,
+
+/*  @PostMapping(value = "/{galleryId}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Gallery addImage(
+      @PathVariable UUID galleryId,
       Authentication auth) {
-    return galleryService.get(eventId, (User) auth.getPrincipal())
-        .map((event) -> securePost(event, file, latitude, longitude, caption,
-            (User) auth.getPrincipal()))
-        .orElseThrow(PhotoNotFoundException::new);
-  }*/ // TODO work on error
+
+  }*/
 
   /**
    * This method gets the event specified for the User who created this event.
@@ -73,7 +59,7 @@ public class GalleryController {
    * @param auth the authentication object
    * @return the event for the creator.
    */
-  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, headers = "Creator")
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public Gallery getGallery(@PathVariable UUID id, Authentication auth) {
     return galleryService.get(id, (User) auth.getPrincipal())
         .orElseThrow(GalleryNotFoundException::new);
