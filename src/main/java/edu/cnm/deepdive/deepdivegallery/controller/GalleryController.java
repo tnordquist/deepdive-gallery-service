@@ -3,11 +3,13 @@ package edu.cnm.deepdive.deepdivegallery.controller;
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
@@ -53,15 +55,26 @@ public class GalleryController {
   }*/
 
   /**
-   * This method gets the event specified for the User who created this event.
+   * This method gets the gallery specified for the User who created this event.
    *
-   * @param id   the associated event id
+   * @param id   the associated gallery id
    * @param auth the authentication object
    * @return the event for the creator.
    */
   @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public Gallery getGallery(@PathVariable UUID id, Authentication auth) {
     return galleryService.get(id, (User) auth.getPrincipal())
+        .orElseThrow(GalleryNotFoundException::new);
+  }
+
+  /**
+   * Returns a list of images that have been associated to a given gallery stored in the database.
+   * @param id the identifying number of a gallery.
+   * @return a list containing the images associated with a given gallery.
+   */
+  @GetMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+  public List<Image> getImages(@PathVariable UUID id) {
+    return galleryService.getImages(id)
         .orElseThrow(GalleryNotFoundException::new);
   }
 

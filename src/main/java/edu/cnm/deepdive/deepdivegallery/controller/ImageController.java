@@ -101,7 +101,8 @@ public class ImageController {
   }
 
   /**
-   * Stores uploaded file content along with a new {@link Photo} instance referencing the content.
+   * Stores uploaded file content along with a new {@link Image} instance referencing the content
+   * and associates it with the specified gallery by passing the the gallery id.
    *
    * @param file MIME content of single file upload.
    * @param auth Authentication token with {@link User} principal.
