@@ -9,6 +9,11 @@ import org.springframework.data.util.Streamable;
 
 public interface ImageRepository extends JpaRepository<Image, UUID> {
 
+  /**
+   * Returns all images in created datetime (descending) order.
+   */
+  Iterable<Image> getAllByOrderByCreatedDesc();
+
   Optional<Image> findFirstByIdAndContributor(UUID id, User contributer);
 
   Streamable<Image> getAllByOrderByNameAsc();

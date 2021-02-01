@@ -42,18 +42,6 @@ public class GalleryController {
     this.galleryRepository = galleryRepository;
   }
 
-//  @PutMapping(value = "/{galleryId}/images/{imageId}",consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Gallery addImage(@PathVariable UUID galleryId, @PathVariable UUID imageId) {
-//    return
-//  }
-
-/*  @PostMapping(value = "/{galleryId}/images", produces = MediaType.APPLICATION_JSON_VALUE)
-  public Gallery addImage(
-      @PathVariable UUID galleryId,
-      Authentication auth) {
-
-  }*/
-
   /**
    * This method gets the gallery specified for the User who created this event.
    *

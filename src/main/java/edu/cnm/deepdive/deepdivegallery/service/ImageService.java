@@ -37,6 +37,13 @@ public class ImageService {
     this.storageService = storageService;
   }
 
+  /**
+   * Selects and returns all images.
+   */
+  public Iterable<Image> list() {
+    return imageRepository.getAllByOrderByCreatedDesc();
+  }
+
   public Optional<Image> get(UUID id) {
     return imageRepository.findById(id);
   }

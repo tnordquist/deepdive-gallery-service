@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.deepdivegallery.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
 import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
@@ -36,6 +37,10 @@ import org.springframework.lang.NonNull;
         @Index(columnList = "created, updated"),
         @Index(columnList = "title")
     }
+)
+@JsonIgnoreProperties(
+    value = {"id", "created", "updated", "creator"},
+    allowGetters = true, ignoreUnknown = true
 )
 public class Gallery implements FlatGallery {
 

@@ -62,7 +62,18 @@ public class ImageController {
     this.galleryService = galleryService;
   }
 
+  /**
+   * Selects and returns all images.
+   *
+   * @param auth Authentication token with {@link User} principal.
+   * @return Selected images.
+   */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public Iterable<Image> list(Authentication auth) {
+    return imageService.list();
+  }
+
+  /*@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public Iterable<Image> search(
       @RequestParam(value = CONTRIBUTOR_PARAM_NAME, required = false) UUID contributorId,
       @RequestParam(value = FRAGMENT_PARAM_NAME, required = false) String fragment,
@@ -74,7 +85,7 @@ public class ImageController {
             .orElseThrow(this::userNotFound)
             : imageService.search(null, fragment)
     ).toList();
-  }
+  }*/
 
   /**
    * Stores uploaded file content along with a new {@link Image} instance referencing the content.
