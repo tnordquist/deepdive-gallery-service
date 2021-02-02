@@ -1,11 +1,13 @@
 package edu.cnm.deepdive.deepdivegallery.configuration;
 
-import edu.cnm.deepdive.deepdivegallery.service.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,24 +25,41 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-  private final UserService userService;
+  private final Converter<Jwt, ? extends AbstractAuthenticationToken> converter;
 
   @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
   private String issuerUri;
   @Value("${spring.security.oauth2.resourceserver.jwt.client-id}")
   private String clientId;
 
+  /**
+   * Initializes this instance with the provided {@link Converter}, used to convert the Bearer token
+   * into a token useful for later injection into controller methods.
+   *
+   * @param converter Token converter.
+   */
   @Autowired
-  public SecurityConfiguration(UserService userService) {
-    this.userService = userService;
+  public SecurityConfiguration(Converter<Jwt, ? extends AbstractAuthenticationToken> converter) {
+    this.converter = converter;
   }
 
+  /**
+   * Declares access-control rules on REST endpoints, based on HTTP method, authentication status,
+   * and roles/authorities granted.
+   *
+   * @param http Security builder.
+   * @throws Exception If an error occurs.
+   */
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http
-        .authorizeRequests((auth) -> auth.anyRequest().authenticated())
+        .authorizeRequests((auth) ->
+            auth
+                .antMatchers(HttpMethod.GET, "/images/**").permitAll()
+                .anyRequest().authenticated()
+        )
         .oauth2ResourceServer().jwt()
-        .jwtAuthenticationConverter(userService);
+        .jwtAuthenticationConverter(converter);
   }
 
   @Bean

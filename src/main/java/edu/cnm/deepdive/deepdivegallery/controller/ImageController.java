@@ -69,7 +69,7 @@ public class ImageController {
    * @return Selected images.
    */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Iterable<Image> list(Authentication auth) {
+  public Iterable<Image> list() {
     return imageService.list();
   }
 
