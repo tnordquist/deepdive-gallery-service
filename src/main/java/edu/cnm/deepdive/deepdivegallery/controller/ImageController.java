@@ -73,7 +73,7 @@ public class ImageController {
     return imageService.list();
   }
 
-  /*@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = {"contributor", "q"})
   public Iterable<Image> search(
       @RequestParam(value = CONTRIBUTOR_PARAM_NAME, required = false) UUID contributorId,
       @RequestParam(value = FRAGMENT_PARAM_NAME, required = false) String fragment,
@@ -85,7 +85,7 @@ public class ImageController {
             .orElseThrow(this::userNotFound)
             : imageService.search(null, fragment)
     ).toList();
-  }*/
+  }
 
   /**
    * Stores uploaded file content along with a new {@link Image} instance referencing the content.
@@ -121,7 +121,7 @@ public class ImageController {
    */
   @PostMapping(value = "/{galleryId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Image> postByCreator(
-      @PathVariable UUID galleryId,
+      @PathVariable(required = false) UUID galleryId,
       @RequestParam MultipartFile file,
       @RequestParam(required = false) String title,
       @RequestParam(required = false) String description,

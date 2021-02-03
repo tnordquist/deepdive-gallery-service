@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
 import edu.cnm.deepdive.deepdivegallery.view.FlatImage;
 import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.net.URI;
@@ -99,10 +98,10 @@ public class Image implements Comparable<Image>, FlatImage {
   @JsonSerialize(as = FlatUser.class)
   private User contributor;
 
-  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+/*  @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "gallery_id", nullable = false, updatable = false)
   @JsonSerialize(as = FlatGallery.class)
-  private Gallery gallery;
+  private Gallery gallery;*/// TODO uncomment and solve null gallery_id problem
 
   @NonNull
   public UUID getId() {
@@ -190,13 +189,13 @@ public class Image implements Comparable<Image>, FlatImage {
     this.contributor = contributor;
   }
 
-  public Gallery getGallery() {
+/*  public Gallery getGallery() {
     return gallery;
   }
 
   public void setGallery(Gallery gallery) {
     this.gallery = gallery;
-  }
+  }*/// TODO uncomment and solve null gallery_id problem
 
   /**
    * Returns the {@link String#hashCode()} of the original filename. Since this filename will not

@@ -3,13 +3,11 @@ package edu.cnm.deepdive.deepdivegallery.controller;
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
-import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
@@ -60,11 +58,11 @@ public class GalleryController {
    * @param id the identifying number of a gallery.
    * @return a list containing the images associated with a given gallery.
    */
-  @GetMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+/*  @GetMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Image> getImages(@PathVariable UUID id) {
     return galleryService.getImages(id)
         .orElseThrow(GalleryNotFoundException::new);
-  }
+  }*/// TODO uncomment and solve null gallery_id problem
 
   /**
    * Creates a new Gallery

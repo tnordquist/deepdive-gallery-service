@@ -2,9 +2,7 @@ package edu.cnm.deepdive.deepdivegallery.service;
 
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
-import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +32,11 @@ public class GalleryService {
     return galleryRepository.save(gallery);
   }
 
-  public Gallery addImg(Gallery gallery, User creator) {
+/*  public Gallery addImg(Gallery gallery, User creator) {
     gallery.setCreator(creator);
     List<Image> images = gallery.getImages();
     return galleryRepository.save(gallery);
-  }
+  }*/// TODO uncomment and solve null gallery_id problem
 
   /**
    * This method returns a gallery by passing in the User who created it and the associated gallery id.
@@ -54,10 +52,12 @@ public class GalleryService {
     return galleryRepository.findById(galleryId);
   }
 
+/*
   public Optional<List<Image>> getImages(UUID galleryId) {
     return get(galleryId)
         .map(Gallery::getImages);
   }
+*/ // TODO uncomment and solve null gallery_id problem
 
   public static class GalleryNotFoundException extends ResponseStatusException {
 

@@ -5,11 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import edu.cnm.deepdive.deepdivegallery.view.FlatGallery;
 import edu.cnm.deepdive.deepdivegallery.view.FlatUser;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,8 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -77,12 +72,12 @@ public class Gallery implements FlatGallery {
   @JsonSerialize(as = FlatUser.class)
   private User creator;
 
-  @NonNull
+/*  @NonNull
   @OneToMany(mappedBy = "gallery", fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,
       CascadeType.MERGE,
       CascadeType.PERSIST, CascadeType.REFRESH})
   @OrderBy("title ASC")
-  private final List<Image> images = new LinkedList<>();
+  private final List<Image> images = new LinkedList<>();*/// TODO uncomment and solve null gallery_id problem
 
   @NonNull
   public UUID getId() {
@@ -124,10 +119,10 @@ public class Gallery implements FlatGallery {
     this.creator = contributor;
   }
 
-  @NonNull
+/*  @NonNull
   public List<Image> getImages() {
     return images;
-  }
+  }*/
 
   /**
    * Returns the location of REST resource representation of this image.

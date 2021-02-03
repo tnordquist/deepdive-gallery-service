@@ -82,7 +82,7 @@ public class ImageService {
     return images;
   }
 
-  public Image save(Image image) {
+  public Image save(@NonNull Image image) {
     return imageRepository.save(image);
   }
 
@@ -119,7 +119,7 @@ public class ImageService {
   }
 
 
-  public Image store(@NonNull MultipartFile file, @NonNull User contributor, @NonNull Gallery gallery,
+  public Image store(@NonNull MultipartFile file, @NonNull User contributor, Gallery gallery,
       String title,
       String description)
       throws IOException, HttpMediaTypeNotAcceptableException {
@@ -128,7 +128,7 @@ public class ImageService {
     String reference = storageService.store(file);
     Image image = new Image();
     image.setContributor(contributor);
-    image.setGallery(gallery);
+//    image.setGallery(gallery);// TODO uncomment and solve null gallery_id problem
     image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
     image.setPath(reference);
     image.setContributor(contributor);
