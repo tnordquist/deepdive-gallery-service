@@ -3,11 +3,13 @@ package edu.cnm.deepdive.deepdivegallery.controller;
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.dao.UserRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService;
 import edu.cnm.deepdive.deepdivegallery.service.GalleryService.GalleryNotFoundException;
 import edu.cnm.deepdive.deepdivegallery.service.ImageService;
 import edu.cnm.deepdive.deepdivegallery.service.UserService;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.hateoas.server.ExposesResourceFor;
 import org.springframework.http.MediaType;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -55,17 +58,26 @@ public class GalleryController {
 
   /**
    * Returns a list of images that have been associated to a given gallery stored in the database.
+   *
    * @param id the identifying number of a gallery.
    * @return a list containing the images associated with a given gallery.
    */
-/*  @GetMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
   public List<Image> getImages(@PathVariable UUID id) {
     return galleryService.getImages(id)
         .orElseThrow(GalleryNotFoundException::new);
-  }*/// TODO uncomment and solve null gallery_id problem
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, params = {"q"})
+  public Gallery getIdByTitle(
+      @RequestParam(value = "q") String title,
+      Authentication auth) {
+    return galleryService.search(title);
+  }
 
   /**
    * Creates a new Gallery
+   *
    * @param gallery
    * @param auth
    * @return
@@ -74,5 +86,26 @@ public class GalleryController {
       produces = MediaType.APPLICATION_JSON_VALUE)
   public Gallery post(@RequestBody Gallery gallery, Authentication auth) {
     return galleryService.newGallery(gallery, (User) auth.getPrincipal());
+  }
+
+  /**
+   * Selects and returns all galleries
+   *
+   * @param auth Authentication token with {@link User} principal.
+   * @return Selected galleries
+   */
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public Iterable<Gallery> list(Authentication auth) {
+    return galleryService.list();
+  }
+
+  /**
+   * Returns all users.
+   *
+   * @param auth Authentication token with {@link User} principal.
+   */
+  @GetMapping(value = "users", produces = MediaType.APPLICATION_JSON_VALUE)
+  public Iterable<User> get(Authentication auth) {
+    return userService.getAll();
   }
 }

@@ -2,7 +2,9 @@ package edu.cnm.deepdive.deepdivegallery.service;
 
 import edu.cnm.deepdive.deepdivegallery.model.dao.GalleryRepository;
 import edu.cnm.deepdive.deepdivegallery.model.entity.Gallery;
+import edu.cnm.deepdive.deepdivegallery.model.entity.Image;
 import edu.cnm.deepdive.deepdivegallery.model.entity.User;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +34,11 @@ public class GalleryService {
     return galleryRepository.save(gallery);
   }
 
-/*  public Gallery addImg(Gallery gallery, User creator) {
+  public Gallery addImg(Gallery gallery, User creator) {
     gallery.setCreator(creator);
     List<Image> images = gallery.getImages();
     return galleryRepository.save(gallery);
-  }*/// TODO uncomment and solve null gallery_id problem
+  }
 
   /**
    * This method returns a gallery by passing in the User who created it and the associated gallery id.
@@ -52,12 +54,41 @@ public class GalleryService {
     return galleryRepository.findById(galleryId);
   }
 
-/*
   public Optional<List<Image>> getImages(UUID galleryId) {
     return get(galleryId)
         .map(Gallery::getImages);
   }
-*/ // TODO uncomment and solve null gallery_id problem
+
+  /**
+   * Selects and returns all galleries.
+   */
+  public Iterable<Gallery> list() {
+    return galleryRepository.getAllByOrderByCreatedDesc();
+  }
+
+
+  /**
+   * Selects and returns a gallery containing the search fragment in the metadata (specifically,
+   * the title or description).
+   *
+   * @param fragment Search text.
+   * @return All images containing {@code fragment} in the metadata.
+   */
+  public Gallery search(@NonNull String fragment) {
+    return galleryRepository.findByTitle(fragment);
+  }
+
+  /**
+   * Selects and returns all images uploaded by the specified {@link User}, that also contain the
+   * search fragment in the metadata (specifically, the title or description).
+   *
+   * @param contributor {@link User} that uploaded the images.
+   * @param fragment    Search text.
+   * @return All images from {@code contributor} with {@code fragment} in the metadata.
+   */
+/*  public Iterable<Image> search(@NonNull User contributor, @NonNull String fragment) {
+    return imageRepository.findAllByContributorAndFragment(contributor, fragment);
+  }*/
 
   public static class GalleryNotFoundException extends ResponseStatusException {
 

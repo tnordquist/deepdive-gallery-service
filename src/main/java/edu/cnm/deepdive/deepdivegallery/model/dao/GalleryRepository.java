@@ -10,13 +10,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GalleryRepository extends JpaRepository<Gallery, UUID> {
 
-  // TODO Add method to get galleries for a specific user
-
   /**
    * This query finds an Event by the user that posted it and the event id.
-   * @param id is the primary key for event.
+   *
+   * @param id   is the primary key for event.
    * @param user is a User object.
    * @return An event associated with the user that created the event.
    */
   Optional<Gallery> findByIdAndCreator(UUID id, User creator);
+
+  /**
+   * Returns all galleries in created datetime (descending) order.
+   */
+  Iterable<Gallery> getAllByOrderByCreatedDesc();
+
+  Gallery findByTitle(String title);
+
 }

@@ -128,7 +128,7 @@ public class ImageService {
     String reference = storageService.store(file);
     Image image = new Image();
     image.setContributor(contributor);
-//    image.setGallery(gallery);// TODO uncomment and solve null gallery_id problem
+    image.setGallery(gallery);// TODO uncomment and solve null gallery_id problem
     image.setName((originalFilename != null) ? originalFilename : UNTITLED_FILENAME);
     image.setPath(reference);
     image.setContributor(contributor);
